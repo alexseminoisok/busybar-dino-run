@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+
+# build output: attached to GitHub Releases instead
+dist/
+
+# test outputs and device captures
+test/stage_out.txt
+test/hiscore_backup.json
+test/shots/

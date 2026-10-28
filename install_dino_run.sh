@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# Install Dino Run onto the BUSY Bar (on-device JS app).
+# Usage:  ./install_world_clock.sh [HOST]
+#   HOST defaults to 10.0.4.20 (USB). For Wi-Fi, pass the bar IP and set
+#   BAR_TOKEN=<http-access-password> in the environment.
+set -euo pipefail
+
+HOST="${1:-10.0.4.20}"
+ID="community.dino_run"
+DIR="$(cd "$(dirname "$0")/$ID" && pwd)"
+
+AUTH=()
+if [[ -n "${BAR_TOKEN:-}" ]]; then AUTH=(-H "X-API-Token: ${BAR_TOKEN}"); fi
+
+upload() { # <relative-path>
+  local rel="$1"
+  echo "  upload $rel"
+  curl -fsS ${AUTH[@]+"${AUTH[@]}"} -X POST \
+    -H "Content-Type: application/octet-stream" \
+    --data-binary "@${DIR}/${rel}" \
+    "http://${HOST}/api/assets/upload?application_name=${ID}&file=${rel}" >/dev/null
+}
+
+echo "Installing ${ID} to ${HOST}"
+
+echo "- closing the app if it's running (its files can't be replaced while open)"
+curl -fsS ${AUTH[@]+"${AUTH[@]}"} -X POST "http://${HOST}/api/apps/quit" >/dev/null 2>&1 || true
+sleep 1
+
+echo "- wiping previous copy (ignore errors if first install)"
+curl -fsS ${AUTH[@]+"${AUTH[@]}"} -X DELETE \
+  "http://${HOST}/api/assets/upload?application_name=${ID}" >/dev/null || true
+
+echo "- uploading files"
+# upload every file in the package, preserving its relative path
+while IFS= read -r abs; do
+  rel="${abs#"$DIR"/}"
+  upload "$rel"
+done < <(find "$DIR" -type f ! -name '.DS_Store' | sort)
+
+echo "- enabling JS apps in the Apps menu"
+curl -fsS ${AUTH[@]+"${AUTH[@]}"} -X POST \
+  "http://${HOST}/api/storage/mkdir?path=/ext/apps_data/apps_menu" >/dev/null || true
+printf '1' | curl -fsS ${AUTH[@]+"${AUTH[@]}"} -X POST \
+  -H "Content-Type: application/octet-stream" --data-binary @- \
+  "http://${HOST}/api/storage/write?path=/ext/apps_data/apps_menu/js_apps_enabled" >/dev/null
+
+echo "- checking the bar lists the app"
+if LIST=$(curl -fsS ${AUTH[@]+"${AUTH[@]}"} "http://${HOST}/api/apps/list" 2>/dev/null); then
+  if printf '%s' "$LIST" | grep -q "\"id\":\"${ID}\""; then
+    echo "  listed in Apps"
+  else
+    echo "  WARNING: the bar doesn't list ${ID}. Firmware 27.12+ skips apps whose"
+    echo "  appmeta/manifest.json has no \"api_version\"."
+  fi
+else
+  echo "  (this firmware has no /api/apps/list; skipped)"
+fi
+
+echo
+echo "Done. On the bar: flip the mode switch to Apps -> Dino Run -> Start."
+echo "START jumps (and starts / retries), hold OK to duck, BACK exits. Sound: Apps -> Dino Run -> Setup."

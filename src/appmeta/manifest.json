@@ -1,11 +1,11 @@
 {
     "format_version": 1,
-    "id": "community.dino_run",
+    "id": "io.github.alexseminoisok.dino",
     "name": "Dino Run",
     "version": "1.0.0",
     "api_version": "27.14.0",
     "description": "Endless runner: jump the cacti, duck the birds",
-    "author": "alex",
+    "author": "alexseminoisok",
     "heap_size_kib": 256,
     "debug": false
 }

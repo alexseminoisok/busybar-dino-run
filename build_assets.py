@@ -18,8 +18,8 @@ texture offset 0 — switching speed with await_previous_end is seamless.
 "Still" sections (one frame each, pointing into the 1 px/frame sections)
 freeze a layer at any position for the game-over screen.
 
-    python3 build_assets.py            # -> community.dino_run/{anims,sounds,appmeta}
-                                        #    + scripts/main.js (data injected)
+    python3 build_assets.py            # -> src/{animations,sounds,appmeta}
+                                        #    + src/main.js (data injected)
 """
 import json, math, os, random, struct, sys, tempfile
 from pathlib import Path
@@ -28,8 +28,7 @@ from PIL import Image
 import sprites as S
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-APP_ID = "community.dino_run"
-PKG = os.path.join(HERE, APP_ID)
+PKG = os.path.join(HERE, "src")          # busy-cli app folder
 FW = os.environ.get("BSB_FW", os.path.join(HERE, "..", "busybar-fw-jerryscript"))
 sys.path.insert(0, os.path.join(FW, "scripts"))
 from seq2anim import BSBAnimConverter  # noqa: E402
@@ -107,7 +106,7 @@ def build_sky():
                 blit(im, CLOUD, cx0 - off + rep, cy)
         frames.append(im)
     write_anim(frames, [{"name": "loop", "start": 0, "end": n - 1}],
-               os.path.join(PKG, "anims", "sky.anim"), "rgb888")
+               os.path.join(PKG, "animations", "sky.anim"), "rgb888")
 
 
 # ── Ground ──────────────────────────────────────────────────
@@ -144,7 +143,7 @@ def build_ground():
         tier_frames.append(n)
     for o in range(GROUND_P):                   # stills: tier 0 moves 1 px/frame
         sections.append({"name": "g%d" % o, "start": o, "end": o})
-    write_anim(frames, sections, os.path.join(PKG, "anims", "ground.anim"))
+    write_anim(frames, sections, os.path.join(PKG, "animations", "ground.anim"))
     return tier_frames
 
 
@@ -183,7 +182,7 @@ def build_obstacles(types, allowed):
         for x in range(-w + 1, W):              # stills, from the 1 px/frame section
             fi = tier0_start + (W - x)
             sections.append({"name": "%s@%d" % (name, x), "start": fi, "end": fi})
-    write_anim(frames, sections, os.path.join(PKG, "anims", "obst.anim"))
+    write_anim(frames, sections, os.path.join(PKG, "animations", "obst.anim"))
     return meta
 
 
@@ -215,7 +214,7 @@ def build_dino():
     for h in range(JUMP_H + 1):
         add("dead%d" % h, [dino_frame(S.DINO_DEAD, h)])
     add("deadduck", [dino_frame(S.DINO_DUCK[0], 0)])
-    write_anim(frames, sections, os.path.join(PKG, "anims", "dino.anim"))
+    write_anim(frames, sections, os.path.join(PKG, "animations", "dino.anim"))
 
 
 # ── Collision masks (bit i = column i) ──────────────────────
@@ -378,10 +377,9 @@ def main():
     }
     src = open(os.path.join(HERE, "main.src.js")).read()
     js = src.replace("/*@DATA@*/null", json.dumps(data, separators=(",", ":"), sort_keys=True))
-    os.makedirs(os.path.join(PKG, "scripts"), exist_ok=True)
-    with open(os.path.join(PKG, "scripts", "main.js"), "w") as f:
+    with open(os.path.join(PKG, "main.js"), "w") as f:
         f.write(js)
-    print("scripts/main.js %.1f KB" % (len(js) / 1024))
+    print("src/main.js %.1f KB" % (len(js) / 1024))
 
 
 if __name__ == "__main__":

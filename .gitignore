@@ -2,11 +2,14 @@
 __pycache__/
 *.pyc
 .venv/
+node_modules/
+*.log
 
-# build output: attached to GitHub Releases instead
+# build output (busy-cli build)
 dist/
 
 # test outputs and device captures
+test/out/
+test/shots/
 test/stage_out.txt
 test/hiscore_backup.json
-test/shots/

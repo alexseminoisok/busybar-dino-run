@@ -20,7 +20,7 @@
 
 var D = {"DINO_X":3,"GROUND_FRAMES":[210,168,140,120,105],"GROUND_P":210,"HIT_DUCK":[0,0,0,768,960,1022,254,100],"HIT_STAND":[0,224,480,120,248,126,36,108],"JUMP":[1,1,2,2,3,3,4,4,4,5,5,5,6,6,6,6,6,6,6,6,6,6,6,5,5,5,4,4,4,3,3,2,2,1,1,0],"OBST":{"bh":{"frames":{"0":81,"1":65,"2":55,"3":47,"4":41},"hit":[0,0,2,126,0],"top":0,"w":8},"bl":{"frames":{"0":81,"1":65,"2":55,"3":47,"4":41},"hit":[0,0,2,126,0],"top":9,"w":8},"bm":{"frames":{"0":81,"1":65,"2":55,"3":47,"4":41},"hit":[0,0,2,126,0],"top":4,"w":8},"l1":{"frames":{"0":78,"1":63,"2":53,"3":45,"4":40},"hit":[4,4,4,14,4],"top":9,"w":5},"l2":{"frames":{"0":84,"1":68,"2":57,"3":49,"4":43},"hit":[260,260,260,910,260],"top":9,"w":11},"l3":{"frames":{"2":61,"3":52,"4":46},"hit":[16644,16644,16644,58254,16644],"top":9,"w":17},"s1":{"frames":{"0":78,"1":63,"2":53,"3":45,"4":40},"hit":[4,4,14,4],"top":10,"w":5},"s2":{"frames":{"0":84,"1":68,"2":57,"3":49,"4":43},"hit":[260,260,910,260],"top":10,"w":11},"s3":{"frames":{"0":90,"1":73,"2":61,"3":52,"4":46},"hit":[16644,16644,58254,16644],"top":10,"w":17}},"SKY_FRAMES":576,"TIERS":[1.0,1.25,1.5,1.75,2.0]};
 
-var APP = "community.dino_run";
+var APP = "io.github.alexseminoisok.dino";
 var API = "http://127.0.0.1/api/";
 
 var F = 16.03;               // ms per animation frame (measured on fw 27.14)
@@ -91,7 +91,7 @@ function sfx(name) {
 // ── Elements ────────────────────────────────────────────────
 function anim(id, path, section, loop, x, y, z, extra) {
   var e = { id: id, type: "animation", display: "front", align: "top_left",
-    path: "anims/" + path + ".anim", section: section, loop: loop, x: x, y: y, z_index: z };
+    path: "animations/" + path + ".anim", section: section, loop: loop, x: x, y: y, z_index: z };
   if (extra) for (var k in extra) e[k] = extra[k];
   return e;
 }

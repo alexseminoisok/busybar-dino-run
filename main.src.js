@@ -20,7 +20,7 @@
 
 var D = /*@DATA@*/null;
 
-var APP = "community.dino_run";
+var APP = "io.github.alexseminoisok.dino";
 var API = "http://127.0.0.1/api/";
 
 var F = 16.03;               // ms per animation frame (measured on fw 27.14)
@@ -91,7 +91,7 @@ function sfx(name) {
 // ── Elements ────────────────────────────────────────────────
 function anim(id, path, section, loop, x, y, z, extra) {
   var e = { id: id, type: "animation", display: "front", align: "top_left",
-    path: "anims/" + path + ".anim", section: section, loop: loop, x: x, y: y, z_index: z };
+    path: "animations/" + path + ".anim", section: section, loop: loop, x: x, y: y, z_index: z };
   if (extra) for (var k in extra) e[k] = extra[k];
   return e;
 }

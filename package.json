@@ -1,0 +1,22 @@
+{
+  "name": "busybar-dino-run",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Endless runner for BUSY Bar: jump the cacti, duck the birds",
+  "author": "alexseminoisok",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "busy-cli build",
+    "app:install": "busy-cli app install",
+    "app:uninstall": "busy-cli app uninstall",
+    "app:run": "busy-cli app run",
+    "app:stop": "busy-cli app stop"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@busy-app/cli": "0.6.0"
+  }
+}

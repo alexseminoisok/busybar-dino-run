@@ -3,6 +3,8 @@
 
     python3 test/shots.py                 # contact sheet -> test/shots/sheet.png
     python3 test/shots.py a.raw b.raw ... # stack those -> preview/device.png
+    python3 test/shots.py DIR ...         # same, reading a test/play.sh run folder
+    python3 test/shots.py DIR --png NAME=SHOT.raw ...  # exact 72x16 -> screenshots/NAME.png
 """
 import base64, os, sys
 from PIL import Image, ImageDraw
@@ -42,13 +44,31 @@ def stack(ims, pad=10):
     return out
 
 
+def exact(pixels):
+    """Native 72x16 PNG, pixel for pixel (catalog screenshots)."""
+    im = Image.new("RGB", (72, 16))
+    im.putdata(pixels)
+    return im
+
+
 if __name__ == "__main__":
     shots = os.path.join(HERE, "shots")
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and os.path.isdir(sys.argv[1]):
+        shots = sys.argv[1]                   # a test/play.sh run folder
+        del sys.argv[1]
+    if len(sys.argv) > 2 and sys.argv[1] == "--png":
+        # test/shots.py [dir] --png NAME=SHOT.raw ...  -> screenshots/NAME.png
+        out = os.path.join(HERE, "..", "screenshots")
+        os.makedirs(out, exist_ok=True)
+        for a in sys.argv[2:]:
+            name, raw = a.split("=", 1)
+            exact(load(os.path.join(shots, raw))).save(os.path.join(out, name + ".png"))
+            print("screenshots/%s.png" % name)
+    elif len(sys.argv) > 1:
         stack([led(load(os.path.join(shots, a))) for a in sys.argv[1:]]).save(
             os.path.join(HERE, "..", "preview", "device.png"))
         print("preview/device.png")
     else:
         names = sorted(n for n in os.listdir(shots) if n.endswith(".raw"))
         stack([led(load(os.path.join(shots, n))) for n in names], 4).save(os.path.join(shots, "sheet.png"))
-        print("test/shots/sheet.png:", ", ".join(names))
+        print(os.path.join(os.path.relpath(shots), "sheet.png") + ":", ", ".join(names))
